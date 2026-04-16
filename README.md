@@ -83,3 +83,20 @@ Frontend: HTML5, CSS3, JavaScript
 6+ задач
 Поля: Priority, Start Date, End Date, Original Estimate
 Представления: Table, Board, Roadmap
+
+
+## 🛠 Code Quality & Pre-commit
+
+Проект настроен с использованием современных инструментов контроля качества кода:
+
+- **Formatter**: [Black](https://github.com/psf/black) — автоматическое форматирование кода
+- **Linter**: [Flake8](https://github.com/PyCQA/flake8) — проверка качества и стиля
+- **Pre-commit hooks** — автоматический запуск проверок перед каждым коммитом
+
+### Как работает
+
+Перед каждым `git commit` автоматически запускаются:
+- Форматирование кода через **Black**
+- Проверка через **Flake8**
+
+Если есть ошибки - коммит не пройдёт, пока их не исправишь.
