@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Трекер привычек</title>
+    <title>💖 Трекер Привычек</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
@@ -11,7 +11,7 @@
 
     <main class="page">
         <section class="hero">
-            <p class="hero-kicker">"Чтобы быть незаменимым, нужно все время меняться" - Coco Chanel</p>
+            <p class="hero-kicker">"Чтобы быть незаменимым, нужно все время меняться" — Coco Chanel</p>
             <h1>Трекер привычек</h1>
             <p class="hero-text">Не просто список дел, а твоя личная энергия дня. Отмечай, держи планку и ритм!</p>
 
@@ -41,7 +41,7 @@
             <h2>Добавить новую привычку</h2>
             <form action="{{ url_for('add_habit') }}" method="post" class="add-form">
                 <input type="text" name="name" placeholder="Например: уход за кожей вечером" required maxlength="60">
-                <button type="submit">Добавить</button>
+                <button type="submit">Добавить 💕</button>
             </form>
         </section>
 
@@ -51,7 +51,10 @@
                     <article class="habit-card {% if habit.done_today %}habit-card--done{% endif %}">
                         <header class="habit-card__header">
                             <h3>{{ habit.name }}</h3>
-                            <a href="{{ url_for('delete_habit', index=loop.index0) }}" class="delete-link" onclick="return confirm('Удалить привычку?')" aria-label="Удалить привычку">Удалить</a>
+                            <a href="{{ url_for('delete_habit', index=loop.index0) }}" 
+                               class="delete-link" 
+                               onclick="return confirm('Удалить привычку?')" 
+                               aria-label="Удалить привычку">🗑️</a>
                         </header>
 
                         <div class="habit-meta">
@@ -68,15 +71,16 @@
                         </div>
 
                         {% if habit.done_today %}
-                            <p class="done-label">Сегодня уже отмечено</p>
+                            <p class="done-label">✅ Сегодня уже отмечено</p>
                         {% else %}
-                            <a href="{{ url_for('mark_done', index=loop.index0) }}" class="mark-link">Отметить выполнение</a>
+                            <a href="{{ url_for('mark_done', index=loop.index0) }}" 
+                               class="mark-link">Отметить выполнение 💖</a>
                         {% endif %}
                     </article>
                 {% endfor %}
             {% else %}
                 <article class="empty-state">
-                    <h3>Твоя сцена пока свободна</h3>
+                    <h3>Твоя сцена пока свободна ✨</h3>
                     <p>Добавь первую привычку и начни собирать свою сияющую серию.</p>
                 </article>
             {% endif %}

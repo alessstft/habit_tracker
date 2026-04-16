@@ -101,5 +101,6 @@ def api_stats():
     avg_streak = sum(calculate_streak(h.get('completed_dates', [])) for h in habits) // total if total > 0 else 0
     return jsonify({"total": total, "today_done": today_done, "avg_streak": avg_streak})
 
+
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='0.0.0.0', debug=True)

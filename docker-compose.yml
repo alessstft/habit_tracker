@@ -1,0 +1,11 @@
+services:
+  habit-tracker:
+    build: .
+    container_name: habit-tracker-pink
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./habits.json:/app/habits.json
+    restart: unless-stopped
+    environment:
+      - FLASK_ENV=production
