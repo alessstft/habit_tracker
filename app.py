@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, jsonify
+from flask import Flask, render_template, request, redirect, url_for
 import json
 import os
 from datetime import datetime, timedelta
@@ -13,7 +13,7 @@ def load_habits():
         try:
             with open(DATA_FILE, "r", encoding="utf-8") as f:
                 return json.load(f)
-        except:
+        except (json.JSONDecodeError, IOError):
             return []
     return []
 
@@ -27,18 +27,42 @@ def get_today():
     return datetime.now().strftime("%Y-%m-%d")
 
 
+def calculate_streak(completed_dates):
+    if not completed_dates:
+        return 0
+    sorted_dates = sorted(completed_dates, reverse=True)
+    streak = 0
+    current = datetime.now().date()
+
+    for date_str in sorted_dates:
+        try:
+            date = datetime.strptime(date_str, "%Y-%m-%d").date()
+            if date == current:
+                streak += 1
+                current -= timedelta(days=1)
+            elif date > current:
+                continue
+            else:
+                break
+        except ValueError:
+            continue
+    return streak
+
+
 @app.route("/")
 def index():
     habits = load_habits()
     today = get_today()
 
     for habit in habits:
-        habit["streak"] = calculate_streak(habit["completed_dates"])
-        habit["done_today"] = today in habit["completed_dates"]
+        habit["streak"] = calculate_streak(habit.get("completed_dates", []))
+        habit["done_today"] = today in habit.get("completed_dates", [])
 
     total = len(habits)
-    today_done = sum(1 for h in habits if h["done_today"])
-    avg_streak = sum(h["streak"] for h in habits) // total if total > 0 else 0
+    today_done = sum(1 for h in habits if h.get("done_today"))
+    # fmt: off
+    avg_streak = sum(h.get("streak", 0) for h in habits) // total if total > 0 else 0
+    # fmt: on
 
     return render_template(
         "index.html",
@@ -47,30 +71,6 @@ def index():
         today_done=today_done,
         avg_streak=avg_streak,
     )
-
-
-def calculate_streak(completed_dates):
-    if not completed_dates:
-        return 0
-
-    parsed_dates = set()
-    for date_str in completed_dates:
-        try:
-            parsed_dates.add(datetime.strptime(date_str, "%Y-%m-%d").date())
-        except (TypeError, ValueError):
-            continue
-
-    if not parsed_dates:
-        return 0
-
-    streak = 0
-    current = datetime.now().date()
-
-    while current in parsed_dates:
-        streak += 1
-        current -= timedelta(days=1)
-
-    return streak
 
 
 @app.route("/add", methods=["POST"])
@@ -88,8 +88,8 @@ def mark_done(index):
     habits = load_habits()
     today = get_today()
     if 0 <= index < len(habits):
-        if today not in habits[index]["completed_dates"]:
-            habits[index]["completed_dates"].append(today)
+        if today not in habits[index].get("completed_dates", []):
+            habits[index].setdefault("completed_dates", []).append(today)
             save_habits(habits)
     return redirect(url_for("index"))
 
@@ -103,19 +103,21 @@ def delete_habit(index):
     return redirect(url_for("index"))
 
 
-@app.route("/api/stats")
-def api_stats():
+# Тестовый маршрут для проверки статусов стрика
+@app.route("/test_set_streak/<int:index>/<int:value>")
+def test_set_streak(index, value):
     habits = load_habits()
-    today = get_today()
-    total = len(habits)
-    today_done = sum(1 for h in habits if today in h.get("completed_dates", []))
-    avg_streak = (
-        sum(calculate_streak(h.get("completed_dates", [])) for h in habits) // total
-        if total > 0
-        else 0
-    )
-    return jsonify({"total": total, "today_done": today_done, "avg_streak": avg_streak})
+    if 0 <= index < len(habits):
+        habits[index]["completed_dates"] = []
+        current = datetime.now().date()
+        for _ in range(value):
+            habits[index].setdefault("completed_dates", []).append(
+                current.strftime("%Y-%m-%d")
+            )
+            current -= timedelta(days=1)
+        save_habits(habits)
+    return redirect(url_for("index"))
 
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", debug=True)
+    app.run(host="0.0.0.0", port=5000, debug=False)

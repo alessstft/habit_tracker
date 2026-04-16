@@ -51,9 +51,9 @@
                     <article class="habit-card {% if habit.done_today %}habit-card--done{% endif %}">
                         <header class="habit-card__header">
                             <h3>{{ habit.name }}</h3>
-                            <a href="{{ url_for('delete_habit', index=loop.index0) }}" 
-                               class="delete-link" 
-                               onclick="return confirm('Удалить привычку?')" 
+                            <a href="{{ url_for('delete_habit', index=loop.index0) }}"
+                               class="delete-link"
+                               onclick="return confirm('Удалить привычку?')"
                                aria-label="Удалить привычку">🗑️</a>
                         </header>
 
@@ -73,7 +73,7 @@
                         {% if habit.done_today %}
                             <p class="done-label">✅ Сегодня уже отмечено</p>
                         {% else %}
-                            <a href="{{ url_for('mark_done', index=loop.index0) }}" 
+                            <a href="{{ url_for('mark_done', index=loop.index0) }}"
                                class="mark-link">Отметить выполнение 💖</a>
                         {% endif %}
                     </article>
